@@ -1,0 +1,14 @@
+{
+    "id": "friendsofbotble/ecommerce-custom-field",
+    "name": "Custom Fields for eCommerce",
+    "namespace": "FriendsOfBotble\\EcommerceCustomField\\",
+    "provider": "FriendsOfBotble\\EcommerceCustomField\\Providers\\EcommerceCustomFieldServiceProvider",
+    "author": "FriendsOfBotble",
+    "url": "https://friendsofbotble.com",
+    "version": "1.0.0",
+    "description": "Add custom fields to product details or checkout page for eCommerce scripts",
+    "minimum_core_version": "7.3.0",
+    "require": [
+        "botble/ecommerce"
+    ]
+}
