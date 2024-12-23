@@ -70,7 +70,7 @@ class CustomFieldForm extends FormAbstract
                 'options',
                 RepeaterField::class,
                 RepeaterFieldOption::make()
-                    ->collapsible('type', CustomFieldType::SELECT, $this->getModel()->type ?: CustomFieldType::TEXT)
+                    ->collapsible('type', CustomFieldType::SELECT, old('type', $this->getModel()->type) ?: CustomFieldType::TEXT)
                     ->label(trans('plugins/ecommerce-custom-field::custom-field.options'))
                     ->fields([
                         [

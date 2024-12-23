@@ -4,7 +4,6 @@ return [
     'dashboard_menu_label' => 'Custom Fields',
     'name' => 'Custom Fields for eCommerce',
     'create' => 'Create Custom Field',
-    'edit' => 'Edit Custom Field :name',
     'label' => 'Label',
     'value' => 'Value',
     'label_helper' => 'The label of the field.',
@@ -19,6 +18,7 @@ return [
     'display_locations' => [
         'product' => 'Product Page',
         'checkout' => 'Checkout Page',
+        'product_form' => 'Product Form (for admin view only)',
     ],
     'types' => [
         'text' => 'Text',

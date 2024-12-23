@@ -2,13 +2,20 @@
 
 namespace FriendsOfBotble\EcommerceCustomField\Providers;
 
+use Botble\Base\Events\UpdatedContentEvent;
+use Botble\Base\Facades\MetaBox;
+use Botble\Base\Forms\FieldOptions\InputFieldOption;
+use Botble\Base\Forms\FieldOptions\SelectFieldOption;
 use Botble\Base\Models\BaseModel;
 use Botble\Base\Supports\ServiceProvider;
 use Botble\Ecommerce\Cart\CartItem;
+use Botble\Ecommerce\Forms\ProductForm;
 use Botble\Ecommerce\Models\Invoice;
 use Botble\Ecommerce\Models\Order;
 use Botble\Ecommerce\Models\OrderProduct;
+use Botble\Ecommerce\Models\Product;
 use FriendsOfBotble\EcommerceCustomField\Contracts\CustomFieldValuable;
+use FriendsOfBotble\EcommerceCustomField\Enums\CustomFieldType;
 use FriendsOfBotble\EcommerceCustomField\Enums\DisplayLocation;
 use FriendsOfBotble\EcommerceCustomField\Models\CustomField;
 use FriendsOfBotble\EcommerceCustomField\Models\CustomFieldValue;
@@ -27,6 +34,75 @@ class HookServiceProvider extends ServiceProvider
         add_filter('ecommerce_checkout_form_before_payment_form', function (?string $html): ?string {
             return $html . $this->renderCustomFields(DisplayLocation::CHECKOUT);
         }, 999);
+
+        ProductForm::beforeRendering(function (ProductForm $form) {
+            $customFields = CustomField::query()
+                ->wherePublished()
+                ->where('display_location', DisplayLocation::PRODUCT_FORM)
+                ->get();
+
+            if ($customFields->isEmpty()) {
+                return $form;
+            }
+
+            foreach ($customFields as $customField) {
+                $fieldOptions = InputFieldOption::make()
+                    ->label($customField->label);
+
+                if ($customField->type == CustomFieldType::SELECT && $customField->options) {
+                    $options = $customField->options;
+
+                    if (! is_array($options)) {
+                        $options = json_decode($customField->options, true);
+                    }
+
+                    $options = collect($options)->mapWithKeys(
+                        fn ($option) => [Arr::get($option, '0.value') => Arr::get($option, '1.value')]
+                    )->toArray();
+
+                    $fieldOptions = SelectFieldOption::make()
+                        ->label($customField->label);
+
+                    $fieldOptions->choices($options);
+                }
+
+                if ($customField->placeholder) {
+                    if ($customField->type == CustomFieldType::SELECT) {
+                        $fieldOptions->emptyValue($customField->placeholder);
+                    } else {
+                        $fieldOptions->placeholder($customField->placeholder);
+                    }
+                }
+
+                $fieldOptions->metadata();
+
+                $form->addAfter(
+                    'content',
+                    $customField->name,
+                    $customField->type,
+                    $fieldOptions
+                );
+            }
+
+            return $form;
+        });
+
+        add_action([BASE_ACTION_AFTER_CREATE_CONTENT, BASE_ACTION_AFTER_UPDATE_CONTENT], function ($screen, $request, $data) {
+            if ($data instanceof Product) {
+                $customFields = CustomField::query()
+                    ->wherePublished()
+                    ->where('display_location', DisplayLocation::PRODUCT_FORM)
+                    ->get();
+
+                if ($customFields->isEmpty()) {
+                    return;
+                }
+
+                foreach ($customFields as $customField) {
+                    MetaBox::saveMetaBoxData($data, $customField->name, $request->input($customField->name));
+                }
+            }
+        }, 120, 3);
 
         add_filter('ecommerce_cart_after_item_content', function (?string $html, CartItem $cartItem): ?string {
             $customFieldValues = Arr::get($cartItem->options->extras, 'custom_fields', []);

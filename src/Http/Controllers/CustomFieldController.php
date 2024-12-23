@@ -46,7 +46,7 @@ class CustomFieldController extends BaseController
 
     public function edit(CustomField $customField)
     {
-        $this->pageTitle(trans('plugins/ecommerce-custom-field::custom-field.edit', ['name' => $customField->name]));
+        $this->pageTitle(trans('core/base::forms.edit_item', ['name' => $customField->label]));
 
         return CustomFieldForm::createFromModel($customField)->renderForm();
     }
@@ -63,7 +63,7 @@ class CustomFieldController extends BaseController
             ->withUpdatedSuccessMessage();
     }
 
-    public function destroy(CustomField $customField)
+    public function destroy(CustomField $customField): DeleteResourceAction
     {
         return DeleteResourceAction::make($customField);
     }
