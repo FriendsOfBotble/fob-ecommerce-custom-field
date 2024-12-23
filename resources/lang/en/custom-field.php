@@ -18,7 +18,7 @@ return [
     'display_locations' => [
         'product' => 'Product Page',
         'checkout' => 'Checkout Page',
-        'product_form' => 'Product Form (for admin view only)',
+        'product_form' => 'Product Form (for admin only)',
     ],
     'types' => [
         'text' => 'Text',
