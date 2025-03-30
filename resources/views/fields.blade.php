@@ -14,7 +14,6 @@
                     @endif
                 >
             @elseif ($customField->type == 'textarea')
-                hehe
                 <textarea
                     name="extras[custom_fields][{{ $customField->getKey() }}]"
                     id="custom_fields-{{ $customField->getKey() }}"
