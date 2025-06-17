@@ -19,7 +19,37 @@ class CustomFieldRequest extends Request
             'type' => [Rule::in(CustomFieldType::values())],
             'display_location' => ['required', Rule::in(DisplayLocation::values())],
             'options' => Rule::when($this->input('type') === CustomFieldType::SELECT, ['required', 'array'], ['nullable']),
+            'file_accepted_types' => Rule::when(
+                in_array($this->input('type'), [CustomFieldType::FILE, CustomFieldType::IMAGE]),
+                ['nullable', 'string', 'max:255'],
+                ['nullable']
+            ),
+            'file_max_size' => Rule::when(
+                in_array($this->input('type'), [CustomFieldType::FILE, CustomFieldType::IMAGE]),
+                ['nullable', 'integer', 'min:1', 'max:100'],
+                ['nullable']
+            ),
             'status' => [Rule::in(BaseStatusEnum::values())],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $type = $this->input('type');
+
+        // Handle file options for file and image types
+        if (in_array($type, [CustomFieldType::FILE, CustomFieldType::IMAGE])) {
+            $fileOptions = [];
+
+            if ($acceptedTypes = $this->input('file_accepted_types')) {
+                $fileOptions['accepted_types'] = $acceptedTypes;
+            }
+
+            if ($maxSize = $this->input('file_max_size')) {
+                $fileOptions['max_file_size'] = (int) $maxSize;
+            }
+
+            $this->merge(['options' => $fileOptions]);
+        }
     }
 }

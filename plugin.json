@@ -5,9 +5,9 @@
     "provider": "FriendsOfBotble\\EcommerceCustomField\\Providers\\EcommerceCustomFieldServiceProvider",
     "author": "FriendsOfBotble",
     "url": "https://friendsofbotble.com",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Add custom fields to product details or checkout page for eCommerce scripts",
-    "minimum_core_version": "7.3.0",
+    "minimum_core_version": "7.5.0",
     "require": [
         "botble/ecommerce"
     ]

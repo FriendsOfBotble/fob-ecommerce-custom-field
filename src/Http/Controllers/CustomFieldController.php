@@ -15,19 +15,19 @@ class CustomFieldController extends BaseController
     protected function breadcrumb(): Breadcrumb
     {
         return parent::breadcrumb()
-            ->add(trans('plugins/ecommerce-custom-field::custom-field.name'), route('ecommerce-custom-fields.index'));
+            ->add(trans('plugins/fob-ecommerce-custom-field::custom-field.name'), route('ecommerce-custom-fields.index'));
     }
 
     public function index(CustomFieldTable $table)
     {
-        $this->pageTitle(trans('plugins/ecommerce-custom-field::custom-field.name'));
+        $this->pageTitle(trans('plugins/fob-ecommerce-custom-field::custom-field.name'));
 
         return $table->renderTable();
     }
 
     public function create()
     {
-        $this->pageTitle(trans('plugins/ecommerce-custom-field::custom-field.create'));
+        $this->pageTitle(trans('plugins/fob-ecommerce-custom-field::custom-field.create'));
 
         return CustomFieldForm::create()->renderForm();
     }

@@ -20,5 +20,9 @@ class CustomFieldType extends Enum
 
     public const SELECT = 'select';
 
-    protected static $langPath = 'plugins/ecommerce-custom-field::custom-field.types';
+    public const FILE = 'file';
+
+    public const IMAGE = 'image';
+
+    protected static $langPath = 'plugins/fob-ecommerce-custom-field::custom-field.types';
 }

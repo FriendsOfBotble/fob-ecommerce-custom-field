@@ -12,5 +12,5 @@ class DisplayLocation extends Enum
 
     public const PRODUCT_FORM = 'product_form';
 
-    protected static $langPath = 'plugins/ecommerce-custom-field::custom-field.display_locations';
+    protected static $langPath = 'plugins/fob-ecommerce-custom-field::custom-field.display_locations';
 }

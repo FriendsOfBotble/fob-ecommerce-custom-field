@@ -51,4 +51,63 @@ class CustomField extends BaseModel
             ),
         );
     }
+
+    public function getFileAcceptedTypes(): string
+    {
+        if (! in_array($this->type, [CustomFieldType::FILE, CustomFieldType::IMAGE])) {
+            return '';
+        }
+
+        $options = $this->options;
+        if (is_string($options)) {
+            $options = json_decode($options, true);
+        }
+
+        $acceptedTypes = Arr::get($options, 'accepted_types', '');
+
+        if ($this->type === CustomFieldType::IMAGE && empty($acceptedTypes)) {
+            return 'jpg,jpeg,png,gif,webp,bmp';
+        }
+
+        return $acceptedTypes ?: '';
+    }
+
+    public function getMaxFileSize(): ?int
+    {
+        if (! in_array($this->type, [CustomFieldType::FILE, CustomFieldType::IMAGE])) {
+            return null;
+        }
+
+        $options = $this->options;
+        if (is_string($options)) {
+            $options = json_decode($options, true);
+        }
+
+        return Arr::get($options, 'max_file_size') ?: null;
+    }
+
+    public function getFileAcceptAttribute(): string
+    {
+        if ($this->type === CustomFieldType::IMAGE) {
+            $acceptedTypes = $this->getFileAcceptedTypes();
+            if ($acceptedTypes) {
+                $extensions = explode(',', $acceptedTypes);
+
+                return implode(',', array_map(fn ($ext) => '.' . trim($ext), $extensions));
+            }
+
+            return 'image/*';
+        }
+
+        if ($this->type === CustomFieldType::FILE) {
+            $acceptedTypes = $this->getFileAcceptedTypes();
+            if ($acceptedTypes) {
+                $extensions = explode(',', $acceptedTypes);
+
+                return implode(',', array_map(fn ($ext) => '.' . trim($ext), $extensions));
+            }
+        }
+
+        return '';
+    }
 }

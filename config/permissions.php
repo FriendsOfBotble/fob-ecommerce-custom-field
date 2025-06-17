@@ -4,6 +4,7 @@ return [
     [
         'name' => 'Custom Fields for eCommerce',
         'flag' => 'ecommerce-custom-fields.index',
+        'parent_flag' => 'plugins.ecommerce',
     ],
     [
         'name' => 'Create',

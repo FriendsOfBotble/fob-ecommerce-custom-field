@@ -33,7 +33,7 @@ class CustomFieldTable extends TableAbstract
                 IdColumn::make(),
                 LinkableColumn::make('label')->route('ecommerce-custom-fields.edit'),
                 EnumColumn::make('display_location')
-                    ->label(trans('plugins/ecommerce-custom-field::custom-field.display_location')),
+                    ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.display_location')),
                 CreatedAtColumn::make(),
                 StatusColumn::make(),
             ])
