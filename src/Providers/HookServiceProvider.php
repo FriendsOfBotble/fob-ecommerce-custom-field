@@ -30,8 +30,8 @@ class HookServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        add_filter(ECOMMERCE_PRODUCT_DETAIL_EXTRA_HTML, function (?string $html): ?string {
-            return $html . $this->renderCustomFields(DisplayLocation::PRODUCT);
+        add_filter(ECOMMERCE_PRODUCT_DETAIL_EXTRA_HTML, function (?string $html, ?Product $product = null): ?string {
+            return $html . $this->renderCustomFields(DisplayLocation::PRODUCT, $product);
         }, 999, 2);
 
         add_filter('ecommerce_checkout_form_before_payment_form', function (?string $html): ?string {
@@ -55,6 +55,24 @@ class HookServiceProvider extends ServiceProvider
             foreach ($customFields as $customField) {
                 $fieldOptions = InputFieldOption::make()
                     ->label($customField->label);
+
+                if ($customField->type == CustomFieldType::READONLY_TEXT) {
+                    $fieldOptions = InputFieldOption::make()
+                        ->label($customField->label)
+                        ->value($customField->getDefaultValue())
+                        ->attributes(['readonly' => 'readonly']);
+
+                    $fieldOptions->metadata();
+
+                    $form->addAfter(
+                        'content',
+                        $customField->name,
+                        'text',
+                        $fieldOptions
+                    );
+
+                    continue;
+                }
 
                 if ($customField->type == CustomFieldType::SELECT && $customField->options) {
                     $options = $customField->options;
@@ -234,7 +252,7 @@ class HookServiceProvider extends ServiceProvider
         }, 999, 2);
     }
 
-    protected function renderCustomFields(string $location): ?string
+    protected function renderCustomFields(string $location, ?Product $product = null): ?string
     {
         $customFields = CustomField::query()
             ->wherePublished()
@@ -243,6 +261,26 @@ class HookServiceProvider extends ServiceProvider
 
         if ($customFields->isEmpty()) {
             return null;
+        }
+
+        if ($product) {
+            $customFields = $customFields->filter(function (CustomField $customField) use ($product) {
+                if ($customField->apply_to !== 'specific') {
+                    return true;
+                }
+
+                $productIds = $customField->product_ids;
+
+                if (empty($productIds)) {
+                    return false;
+                }
+
+                return in_array($product->getKey(), $productIds);
+            });
+
+            if ($customFields->isEmpty()) {
+                return null;
+            }
         }
 
         return view('plugins/fob-ecommerce-custom-field::fields', compact('customFields'))->render();

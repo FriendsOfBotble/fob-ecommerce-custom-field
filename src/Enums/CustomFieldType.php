@@ -24,5 +24,7 @@ class CustomFieldType extends Enum
 
     public const IMAGE = 'image';
 
+    public const READONLY_TEXT = 'readonly_text';
+
     protected static $langPath = 'plugins/fob-ecommerce-custom-field::custom-field.types';
 }

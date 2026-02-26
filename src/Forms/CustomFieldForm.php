@@ -14,6 +14,7 @@ use Botble\Base\Forms\Fields\RepeaterField;
 use Botble\Base\Forms\Fields\SelectField;
 use Botble\Base\Forms\Fields\TextField;
 use Botble\Base\Forms\FormAbstract;
+use Botble\Ecommerce\Models\Product;
 use FriendsOfBotble\EcommerceCustomField\Enums\CustomFieldType;
 use FriendsOfBotble\EcommerceCustomField\Enums\DisplayLocation;
 use FriendsOfBotble\EcommerceCustomField\Http\Requests\CustomFieldRequest;
@@ -24,9 +25,17 @@ class CustomFieldForm extends FormAbstract
 {
     public function setup(): void
     {
-        Assets::addScriptsDirectly([
-            'plugins/fob-ecommerce-custom-field/js/custom-field-form.js',
-        ]);
+        Assets::addScriptsDirectly('vendor/core/plugins/ecommerce/js/flash-sale.js')
+            ->addStylesDirectly('vendor/core/plugins/ecommerce/css/ecommerce.css');
+
+        $model = $this->getModel();
+        $products = collect();
+
+        if ($model->getKey() && $model->apply_to === 'specific' && ! empty($model->product_ids)) {
+            $products = Product::query()
+                ->whereIn('id', $model->product_ids)
+                ->get();
+        }
 
         $this
             ->model(CustomField::class)
@@ -73,10 +82,22 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.display_location_helper'))
             )
             ->add(
+                'apply_to',
+                RadioField::class,
+                RadioFieldOption::make()
+                    ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.apply_to'))
+                    ->choices([
+                        'all' => trans('plugins/fob-ecommerce-custom-field::custom-field.apply_to_all'),
+                        'specific' => trans('plugins/fob-ecommerce-custom-field::custom-field.apply_to_specific'),
+                    ])
+                    ->defaultValue(old('apply_to', $model->apply_to ?: 'all'))
+                    ->collapsible('display_location', DisplayLocation::PRODUCT, old('display_location', $model->display_location))
+            )
+            ->add(
                 'options',
                 RepeaterField::class,
                 RepeaterFieldOption::make()
-                    ->collapsible('type', CustomFieldType::SELECT, old('type', $this->getModel()->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', CustomFieldType::SELECT, old('type', $model->type) ?: CustomFieldType::TEXT)
                     ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.options'))
                     ->fields([
                         [
@@ -105,6 +126,15 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.options_helper')),
             )
             ->add(
+                'default_value',
+                TextField::class,
+                TextFieldOption::make()
+                    ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.default_value'))
+                    ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.default_value_helper'))
+                    ->value(old('default_value', $this->getOptionValue('default_value')))
+                    ->collapsible('type', CustomFieldType::READONLY_TEXT, old('type', $model->type) ?: CustomFieldType::TEXT)
+            )
+            ->add(
                 'file_accepted_types',
                 TextField::class,
                 TextFieldOption::make()
@@ -112,7 +142,7 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.file_accepted_types_helper'))
                     ->placeholder('jpg,jpeg,png,pdf,doc,docx')
                     ->value(old('file_accepted_types', $this->getFileOptionValue('accepted_types')))
-                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $this->getModel()->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $model->type) ?: CustomFieldType::TEXT)
             )
             ->add(
                 'file_max_size',
@@ -122,7 +152,7 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.file_max_size_helper'))
                     ->placeholder('2')
                     ->value(old('file_max_size', $this->getFileOptionValue('max_file_size')))
-                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $this->getModel()->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $model->type) ?: CustomFieldType::TEXT)
                     ->attributes([
                         'type' => 'number',
                         'min' => '1',
@@ -130,7 +160,25 @@ class CustomFieldForm extends FormAbstract
                     ])
             )
             ->add('status', SelectField::class, StatusFieldOption::make())
+            ->addMetaBoxes([
+                'product_selector' => [
+                    'title' => trans('plugins/fob-ecommerce-custom-field::custom-field.select_products'),
+                    'content' => view('plugins/fob-ecommerce-custom-field::product-selector', [
+                        'customField' => $model,
+                        'products' => $products,
+                    ]),
+                    'priority' => 1,
+                    'attributes' => [
+                        'id' => 'product-selector-box',
+                    ],
+                ],
+            ])
             ->setBreakFieldPoint('status');
+    }
+
+    protected function getOptionValue(string $key): string
+    {
+        return $this->getFileOptionValue($key);
     }
 
     protected function getFileOptionValue(string $key): string

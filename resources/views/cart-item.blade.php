@@ -4,11 +4,17 @@
             <dt>{{ $name }}:</dt>
             <dd class="mb-0">
                 @if(filter_var($value, FILTER_VALIDATE_URL) && (str_contains($value, '/storage/') || str_contains($value, '/uploads/')))
-                    @if(in_array(pathinfo($value, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                        <img src="{{ $value }}" alt="{{ $name }}" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                    @php
+                        $isImage = in_array(strtolower(pathinfo($value, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+                    @endphp
+
+                    @if($isImage)
+                        <a href="{{ $value }}" target="_blank">
+                            <img src="{{ $value }}" alt="{{ $name }}" class="rounded border" style="max-width: 40px; max-height: 40px; object-fit: cover;">
+                        </a>
                     @else
-                        <a href="{{ $value }}" target="_blank" class="text-decoration-none">
-                            <i class="ti ti-paperclip"></i> {{ __('View File') }}
+                        <a href="{{ $value }}" target="_blank" download class="d-inline-flex align-items-center gap-1 text-decoration-none">
+                            <x-core::icon name="ti ti-file" /> {{ basename($value) }}
                         </a>
                     @endif
                 @else

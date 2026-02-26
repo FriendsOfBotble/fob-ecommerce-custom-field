@@ -1,18 +1,24 @@
 @foreach($customFieldValues as $customFieldValue)
     <p class="mb-1">
+        @php
+            $fieldType = $customFieldValue->customField->type;
+            $fieldValue = $customFieldValue->value;
+            $isFileType = in_array($fieldType, ['file', 'image']);
+            $isImage = $isFileType && in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+            $fileUrl = $isFileType ? RvMedia::url($fieldValue) : null;
+        @endphp
+
         {{ $customFieldValue->customField->label }}:
-        <strong class="text-warning">
-            @if(filter_var($customFieldValue->value, FILTER_VALIDATE_URL) && (str_contains($customFieldValue->value, '/storage/') || str_contains($customFieldValue->value, '/uploads/')))
-                @if(in_array(pathinfo($customFieldValue->value, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                    <img src="{{ $customFieldValue->value }}" alt="{{ $customFieldValue->customField->label }}" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
-                @else
-                    <a href="{{ $customFieldValue->value }}" target="_blank" class="text-decoration-none">
-                        <i class="ti ti-paperclip"></i> {{ __('View File') }}
-                    </a>
-                @endif
-            @else
-                {{ $customFieldValue->value }}
-            @endif
-        </strong>
+        @if ($isImage)
+            <a href="{{ $fileUrl }}" target="_blank">
+                <img src="{{ $fileUrl }}" alt="{{ $customFieldValue->customField->label }}" class="rounded border" style="max-width: 80px; max-height: 80px; object-fit: cover;">
+            </a>
+        @elseif ($isFileType)
+            <a href="{{ $fileUrl }}" target="_blank" download>
+                {{ basename($fieldValue) }}
+            </a>
+        @else
+            <strong>{{ $fieldValue }}</strong>
+        @endif
     </p>
 @endforeach

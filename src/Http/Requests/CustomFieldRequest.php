@@ -12,12 +12,16 @@ class CustomFieldRequest extends Request
 {
     public function rules(): array
     {
+        $isProduct = $this->input('display_location') === DisplayLocation::PRODUCT;
+
         return [
             'label' => ['required', 'string', 'max:255'],
             'name' => ['required', 'alpha_dash', 'max:255'],
             'placeholder' => ['nullable', 'string', 'max:255'],
             'type' => [Rule::in(CustomFieldType::values())],
             'display_location' => ['required', Rule::in(DisplayLocation::values())],
+            'apply_to' => Rule::when($isProduct, ['required', Rule::in(['all', 'specific'])], ['nullable']),
+            'product_ids' => Rule::when($isProduct && $this->input('apply_to') === 'specific', ['required', 'array', 'min:1'], ['nullable']),
             'options' => Rule::when($this->input('type') === CustomFieldType::SELECT, ['required', 'array'], ['nullable']),
             'file_accepted_types' => Rule::when(
                 in_array($this->input('type'), [CustomFieldType::FILE, CustomFieldType::IMAGE]),
@@ -29,6 +33,11 @@ class CustomFieldRequest extends Request
                 ['nullable', 'integer', 'min:1', 'max:100'],
                 ['nullable']
             ),
+            'default_value' => Rule::when(
+                $this->input('type') === CustomFieldType::READONLY_TEXT,
+                ['required', 'string', 'max:1000'],
+                ['nullable']
+            ),
             'status' => [Rule::in(BaseStatusEnum::values())],
         ];
     }
@@ -37,7 +46,10 @@ class CustomFieldRequest extends Request
     {
         $type = $this->input('type');
 
-        // Handle file options for file and image types
+        if ($type === CustomFieldType::READONLY_TEXT) {
+            $this->merge(['options' => ['default_value' => $this->input('default_value', '')]]);
+        }
+
         if (in_array($type, [CustomFieldType::FILE, CustomFieldType::IMAGE])) {
             $fileOptions = [];
 
@@ -50,6 +62,20 @@ class CustomFieldRequest extends Request
             }
 
             $this->merge(['options' => $fileOptions]);
+        }
+
+        if ($this->input('display_location') !== DisplayLocation::PRODUCT) {
+            $this->merge(['apply_to' => 'all', 'product_ids' => null]);
+        } elseif ($this->input('apply_to') !== 'specific') {
+            $this->merge(['product_ids' => null]);
+        } else {
+            $productIds = $this->input('product_ids');
+
+            if (is_string($productIds)) {
+                $productIds = array_values(array_filter(explode(',', $productIds)));
+            }
+
+            $this->merge(['product_ids' => $productIds ?: null]);
         }
     }
 }

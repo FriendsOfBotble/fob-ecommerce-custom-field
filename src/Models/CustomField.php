@@ -22,6 +22,8 @@ class CustomField extends BaseModel
         'status',
         'options',
         'display_location',
+        'apply_to',
+        'product_ids',
     ];
 
     protected $casts = [
@@ -29,6 +31,7 @@ class CustomField extends BaseModel
         'status' => BaseStatusEnum::class,
         'options' => 'array',
         'display_location' => DisplayLocation::class,
+        'product_ids' => 'array',
     ];
 
     protected static function booted(): void
@@ -84,6 +87,20 @@ class CustomField extends BaseModel
         }
 
         return Arr::get($options, 'max_file_size') ?: null;
+    }
+
+    public function getDefaultValue(): string
+    {
+        if ($this->type != CustomFieldType::READONLY_TEXT) {
+            return '';
+        }
+
+        $options = $this->options;
+        if (is_string($options)) {
+            $options = json_decode($options, true);
+        }
+
+        return (string) Arr::get($options, 'default_value', '');
     }
 
     public function getFileAcceptAttribute(): string
