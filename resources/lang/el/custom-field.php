@@ -20,6 +20,8 @@ return [
         'product' => 'Σελίδα προϊόντος',
         'checkout' => 'Σελίδα ολοκλήρωσης αγοράς',
         'product_form' => 'Φόρμα προϊόντος (μόνο για διαχειριστή)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Κείμενο',

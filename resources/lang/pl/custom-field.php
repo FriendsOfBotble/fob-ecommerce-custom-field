@@ -20,6 +20,8 @@ return [
         'product' => 'Strona produktu',
         'checkout' => 'Strona płatności',
         'product_form' => 'Formularz produktu (tylko dla administratora)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Tekst',

@@ -20,6 +20,8 @@ return [
         'product' => 'Produkto puslapis',
         'checkout' => 'Apmokėjimo puslapis',
         'product_form' => 'Produkto forma (tik administratoriui)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Tekstas',

@@ -20,6 +20,8 @@ return [
         'product' => 'Product Page',
         'checkout' => 'Checkout Page',
         'product_form' => 'Product Form (for admin only)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Text',

@@ -20,6 +20,8 @@ return [
         'product' => 'Tuotesivu',
         'checkout' => 'Kassasivu',
         'product_form' => 'Tuotelomake (vain ylläpitäjälle)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Teksti',

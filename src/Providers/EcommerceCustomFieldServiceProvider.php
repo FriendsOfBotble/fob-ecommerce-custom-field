@@ -6,6 +6,7 @@ use Botble\Base\Facades\DashboardMenu;
 use Botble\Base\Supports\DashboardMenuItem;
 use Botble\Base\Supports\ServiceProvider;
 use Botble\Base\Traits\LoadAndPublishDataTrait;
+use Botble\Ecommerce\Models\Customer;
 use Botble\Ecommerce\Models\Order;
 use Botble\Ecommerce\Models\OrderProduct;
 use Botble\LanguageAdvanced\Supports\LanguageAdvancedManager;
@@ -51,6 +52,10 @@ class EcommerceCustomFieldServiceProvider extends ServiceProvider
 
         OrderProduct::resolveRelationUsing('customFieldValues', function (OrderProduct $orderProduct) {
             return $orderProduct->morphMany(CustomFieldValue::class, 'model');
+        });
+
+        Customer::resolveRelationUsing('customFieldValues', function (Customer $customer) {
+            return $customer->morphMany(CustomFieldValue::class, 'model');
         });
 
         if (defined('LANGUAGE_MODULE_SCREEN_NAME') && defined('LANGUAGE_ADVANCED_MODULE_SCREEN_NAME')) {

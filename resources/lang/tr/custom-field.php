@@ -20,6 +20,8 @@ return [
         'product' => 'Ürün Sayfası',
         'checkout' => 'Ödeme Sayfası',
         'product_form' => 'Ürün Formu (yalnızca yönetici için)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Metin',

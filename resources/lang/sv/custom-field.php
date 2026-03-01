@@ -20,6 +20,8 @@ return [
         'product' => 'Produktsida',
         'checkout' => 'Kassasida',
         'product_form' => 'Produktformulär (endast för administratör)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Text',

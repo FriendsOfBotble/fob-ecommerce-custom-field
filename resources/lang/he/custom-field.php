@@ -20,6 +20,8 @@ return [
         'product' => 'דף מוצר',
         'checkout' => 'דף תשלום',
         'product_form' => 'טופס מוצר (למנהל בלבד)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'טקסט',

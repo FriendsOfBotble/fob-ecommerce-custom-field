@@ -20,6 +20,8 @@ return [
         'product' => 'صفحه محصول',
         'checkout' => 'صفحه پرداخت',
         'product_form' => 'فرم محصول (فقط برای مدیر)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'متن',

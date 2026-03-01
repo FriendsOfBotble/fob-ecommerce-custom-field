@@ -20,6 +20,8 @@ return [
         'product' => '상품 페이지',
         'checkout' => '결제 페이지',
         'product_form' => '상품 양식 (관리자 전용)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => '텍스트',

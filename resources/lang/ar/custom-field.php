@@ -20,6 +20,8 @@ return [
         'product' => 'صفحة المنتج',
         'checkout' => 'صفحة الدفع',
         'product_form' => 'نموذج المنتج (للمسؤول فقط)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'نص',

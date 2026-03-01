@@ -8,8 +8,11 @@ use Botble\Base\Forms\FieldOptions\SelectFieldOption;
 use Botble\Base\Models\BaseModel;
 use Botble\Base\Supports\ServiceProvider;
 use Botble\Ecommerce\Cart\CartItem;
+use Botble\Ecommerce\Forms\Fronts\Auth\LoginForm;
+use Botble\Ecommerce\Forms\Fronts\Auth\RegisterForm;
 use Botble\Ecommerce\Forms\Fronts\CheckoutForm;
 use Botble\Ecommerce\Forms\ProductForm;
+use Botble\Ecommerce\Models\Customer;
 use Botble\Ecommerce\Models\Invoice;
 use Botble\Ecommerce\Models\Order;
 use Botble\Ecommerce\Models\OrderProduct;
@@ -20,6 +23,7 @@ use FriendsOfBotble\EcommerceCustomField\Enums\CustomFieldType;
 use FriendsOfBotble\EcommerceCustomField\Enums\DisplayLocation;
 use FriendsOfBotble\EcommerceCustomField\Models\CustomField;
 use FriendsOfBotble\EcommerceCustomField\Models\CustomFieldValue;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -39,8 +43,76 @@ class HookServiceProvider extends ServiceProvider
         }, 999);
 
         CheckoutForm::extend(function ($form) {
-            $this->addMultipartToCheckoutForm($form);
+            $this->addMultipartToForm($form, DisplayLocation::CHECKOUT);
         });
+
+        LoginForm::beforeRendering(function (LoginForm $form) {
+            $html = $this->renderCustomFields(DisplayLocation::LOGIN);
+
+            if ($html) {
+                $form->addBefore('openRow', 'custom_fields_html', 'html', [
+                    'html' => $html,
+                ]);
+            }
+
+            return $form;
+        });
+
+        LoginForm::extend(function ($form) {
+            $this->addMultipartToForm($form, DisplayLocation::LOGIN);
+        });
+
+        RegisterForm::beforeRendering(function (RegisterForm $form) {
+            $html = $this->renderCustomFields(DisplayLocation::REGISTER);
+
+            if ($html) {
+                $form->addBefore('agree_terms_and_policy', 'custom_fields_html', 'html', [
+                    'html' => $html,
+                ]);
+            }
+
+            return $form;
+        });
+
+        RegisterForm::extend(function ($form) {
+            $this->addMultipartToForm($form, DisplayLocation::REGISTER);
+        });
+
+        add_filter('ecommerce_customer_registration_form_validation_rules', function (array $rules): array {
+            return $this->addCustomFieldValidationRules($rules, DisplayLocation::REGISTER);
+        });
+
+        add_filter('ecommerce_customer_login_form_validation_rules', function (array $rules): array {
+            return $this->addCustomFieldValidationRules($rules, DisplayLocation::LOGIN);
+        });
+
+        $this->app['events']->listen(Registered::class, function (Registered $event) {
+            $user = $event->user;
+
+            if (! $user instanceof Customer) {
+                return;
+            }
+
+            $fields = $this->getCustomFieldsFromRequest();
+
+            if (! empty($fields)) {
+                $this->saveCustomFields($user, $fields);
+            }
+        });
+
+        add_filter('customer_login_response', function ($response, $customer, $request) {
+            if (! $customer instanceof Customer) {
+                return $response;
+            }
+
+            $fields = $this->getCustomFieldsFromRequest();
+
+            if (! empty($fields)) {
+                $this->saveCustomFields($customer, $fields);
+            }
+
+            return $response;
+        }, 999, 3);
 
         ProductForm::beforeRendering(function (ProductForm $form) {
             $customFields = CustomField::query()
@@ -444,26 +516,46 @@ class HookServiceProvider extends ServiceProvider
         return true;
     }
 
-    protected function addMultipartToCheckoutForm($form): void
+    protected function addCustomFieldValidationRules(array $rules, string $location): array
     {
-        // Check if there are any file/image custom fields for checkout
+        $customFields = CustomField::query()
+            ->wherePublished()
+            ->where('display_location', $location)
+            ->get();
+
+        foreach ($customFields as $field) {
+            $fieldRules = ['nullable', 'string', 'max:255'];
+
+            if (in_array($field->type, [CustomFieldType::FILE, CustomFieldType::IMAGE])) {
+                $fieldRules = ['nullable', 'file'];
+            }
+
+            $rules["extras.custom_fields.{$field->getKey()}"] = $fieldRules;
+        }
+
+        return $rules;
+    }
+
+    protected function getCustomFieldsFromRequest(): array
+    {
+        $textInputs = request()->input('extras.custom_fields', []);
+        $fileInputs = request()->file('extras.custom_fields', []);
+
+        return $textInputs + $fileInputs;
+    }
+
+    protected function addMultipartToForm($form, string $location): void
+    {
         $hasFileFields = CustomField::query()
             ->wherePublished()
-            ->where('display_location', DisplayLocation::CHECKOUT)
+            ->where('display_location', $location)
             ->whereIn('type', [CustomFieldType::FILE, CustomFieldType::IMAGE])
             ->exists();
 
         if ($hasFileFields) {
-            // Get current form options
             $formOptions = $form->getFormOptions();
-
-            // Add enctype for file uploads
             $formOptions['enctype'] = 'multipart/form-data';
-
-            // Update form options
             $form->setFormOptions($formOptions);
-
-            logger()->info('Added multipart/form-data to checkout form');
         }
     }
 }

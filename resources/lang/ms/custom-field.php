@@ -20,6 +20,8 @@ return [
         'product' => 'Halaman Produk',
         'checkout' => 'Halaman Pembayaran',
         'product_form' => 'Borang Produk (untuk admin sahaja)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Teks',

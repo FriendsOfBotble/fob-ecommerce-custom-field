@@ -20,6 +20,8 @@ return [
         'product' => 'Stran izdelka',
         'checkout' => 'Stran blagajne',
         'product_form' => 'Obrazec izdelka (samo za skrbnika)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Besedilo',

@@ -20,6 +20,8 @@ return [
         'product' => 'Produkta lapa',
         'checkout' => 'Norēķinu lapa',
         'product_form' => 'Produkta forma (tikai administratoram)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Teksts',

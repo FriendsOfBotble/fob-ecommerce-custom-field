@@ -20,6 +20,8 @@ return [
         'product' => 'პროდუქტის გვერდი',
         'checkout' => 'გადახდის გვერდი',
         'product_form' => 'პროდუქტის ფორმა (მხოლოდ ადმინისტრატორისთვის)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'ტექსტი',

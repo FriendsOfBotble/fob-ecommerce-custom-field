@@ -20,6 +20,8 @@ return [
         'product' => 'Termékoldal',
         'checkout' => 'Pénztár oldal',
         'product_form' => 'Termék űrlap (csak adminisztrátornak)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Szöveg',

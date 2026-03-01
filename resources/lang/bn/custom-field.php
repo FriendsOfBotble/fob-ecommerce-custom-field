@@ -20,6 +20,8 @@ return [
         'product' => 'পণ্য পৃষ্ঠা',
         'checkout' => 'চেকআউট পৃষ্ঠা',
         'product_form' => 'পণ্য ফর্ম (শুধুমাত্র অ্যাডমিনের জন্য)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'টেক্সট',

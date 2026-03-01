@@ -20,6 +20,8 @@ return [
         'product' => 'Toote leht',
         'checkout' => 'Kassa leht',
         'product_form' => 'Toote vorm (ainult administraatorile)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Tekst',

@@ -20,6 +20,8 @@ return [
         'product' => 'หน้าสินค้า',
         'checkout' => 'หน้าชำระเงิน',
         'product_form' => 'แบบฟอร์มสินค้า (สำหรับผู้ดูแลระบบเท่านั้น)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'ข้อความ',

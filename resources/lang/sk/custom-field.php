@@ -20,6 +20,8 @@ return [
         'product' => 'Stránka produktu',
         'checkout' => 'Stránka pokladne',
         'product_form' => 'Formulár produktu (iba pre administrátora)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Text',

@@ -20,6 +20,8 @@ return [
         'product' => 'उत्पाद पृष्ठ',
         'checkout' => 'चेकआउट पृष्ठ',
         'product_form' => 'उत्पाद फ़ॉर्म (केवल व्यवस्थापक के लिए)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'टेक्स्ट',

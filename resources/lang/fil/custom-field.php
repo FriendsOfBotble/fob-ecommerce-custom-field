@@ -20,6 +20,8 @@ return [
         'product' => 'Pahina ng Produkto',
         'checkout' => 'Pahina ng Checkout',
         'product_form' => 'Form ng Produkto (para sa admin lamang)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Teksto',

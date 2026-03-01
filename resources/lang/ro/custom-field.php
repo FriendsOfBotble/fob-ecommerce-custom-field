@@ -20,6 +20,8 @@ return [
         'product' => 'Pagina produsului',
         'checkout' => 'Pagina de plată',
         'product_form' => 'Formularul produsului (doar pentru administrator)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Text',

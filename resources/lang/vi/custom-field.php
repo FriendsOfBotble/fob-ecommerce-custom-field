@@ -20,6 +20,8 @@ return [
         'product' => 'Trang sản phẩm',
         'checkout' => 'Trang thanh toán',
         'product_form' => 'Biểu mẫu sản phẩm (chỉ dành cho quản trị viên)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Văn bản',

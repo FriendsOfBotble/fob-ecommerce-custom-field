@@ -20,6 +20,8 @@ return [
         'product' => 'Productpagina',
         'checkout' => 'Afrekenpagina',
         'product_form' => 'Productformulier (alleen voor beheerder)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Tekst',

@@ -20,6 +20,8 @@ return [
         'product' => '商品ページ',
         'checkout' => '決済ページ',
         'product_form' => '商品フォーム（管理者のみ）',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'テキスト',

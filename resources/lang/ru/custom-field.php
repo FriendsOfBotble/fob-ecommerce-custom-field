@@ -20,6 +20,8 @@ return [
         'product' => 'Страница товара',
         'checkout' => 'Страница оплаты',
         'product_form' => 'Форма товара (только для администратора)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Текст',

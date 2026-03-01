@@ -20,6 +20,8 @@ return [
         'product' => 'Страница производа',
         'checkout' => 'Страница плаћања',
         'product_form' => 'Формулар производа (само за администратора)',
+        'login' => 'Login Page',
+        'register' => 'Register Page',
     ],
     'types' => [
         'text' => 'Текст',
