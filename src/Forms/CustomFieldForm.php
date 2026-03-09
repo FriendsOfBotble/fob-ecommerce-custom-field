@@ -29,9 +29,11 @@ class CustomFieldForm extends FormAbstract
             ->addStylesDirectly('vendor/core/plugins/ecommerce/css/ecommerce.css');
 
         $model = $this->getModel();
+        $isExistingModel = $model instanceof CustomField && $model->getKey();
+        $modelType = $isExistingModel ? $model->type : null;
         $products = collect();
 
-        if ($model->getKey() && $model->apply_to === 'specific' && ! empty($model->product_ids)) {
+        if ($isExistingModel && $model->apply_to === 'specific' && ! empty($model->product_ids)) {
             $products = Product::query()
                 ->whereIn('id', $model->product_ids)
                 ->get();
@@ -90,14 +92,14 @@ class CustomFieldForm extends FormAbstract
                         'all' => trans('plugins/fob-ecommerce-custom-field::custom-field.apply_to_all'),
                         'specific' => trans('plugins/fob-ecommerce-custom-field::custom-field.apply_to_specific'),
                     ])
-                    ->defaultValue(old('apply_to', $model->apply_to ?: 'all'))
-                    ->collapsible('display_location', DisplayLocation::PRODUCT, old('display_location', $model->display_location))
+                    ->defaultValue(old('apply_to', $isExistingModel ? ($model->apply_to ?: 'all') : 'all'))
+                    ->collapsible('display_location', DisplayLocation::PRODUCT, old('display_location', $isExistingModel ? $model->display_location : null))
             )
             ->add(
                 'options',
                 RepeaterField::class,
                 RepeaterFieldOption::make()
-                    ->collapsible('type', CustomFieldType::SELECT, old('type', $model->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', CustomFieldType::SELECT, old('type', $modelType) ?: CustomFieldType::TEXT)
                     ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.options'))
                     ->fields([
                         [
@@ -132,7 +134,7 @@ class CustomFieldForm extends FormAbstract
                     ->label(trans('plugins/fob-ecommerce-custom-field::custom-field.default_value'))
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.default_value_helper'))
                     ->value(old('default_value', $this->getOptionValue('default_value')))
-                    ->collapsible('type', CustomFieldType::READONLY_TEXT, old('type', $model->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', CustomFieldType::READONLY_TEXT, old('type', $modelType) ?: CustomFieldType::TEXT)
             )
             ->add(
                 'file_accepted_types',
@@ -142,7 +144,7 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.file_accepted_types_helper'))
                     ->placeholder('jpg,jpeg,png,pdf,doc,docx')
                     ->value(old('file_accepted_types', $this->getFileOptionValue('accepted_types')))
-                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $model->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $modelType) ?: CustomFieldType::TEXT)
             )
             ->add(
                 'file_max_size',
@@ -152,7 +154,7 @@ class CustomFieldForm extends FormAbstract
                     ->helperText(trans('plugins/fob-ecommerce-custom-field::custom-field.file_max_size_helper'))
                     ->placeholder('2')
                     ->value(old('file_max_size', $this->getFileOptionValue('max_file_size')))
-                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $model->type) ?: CustomFieldType::TEXT)
+                    ->collapsible('type', [CustomFieldType::FILE, CustomFieldType::IMAGE], old('type', $modelType) ?: CustomFieldType::TEXT)
                     ->attributes([
                         'type' => 'number',
                         'min' => '1',
@@ -184,7 +186,7 @@ class CustomFieldForm extends FormAbstract
     protected function getFileOptionValue(string $key): string
     {
         $model = $this->getModel();
-        if (! $model || ! $model->exists) {
+        if (! $model instanceof CustomField || ! $model->exists) {
             return '';
         }
 
