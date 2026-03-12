@@ -29,13 +29,20 @@ class CustomFieldForm extends FormAbstract
             ->addStylesDirectly('vendor/core/plugins/ecommerce/css/ecommerce.css');
 
         $model = $this->getModel();
-        $isExistingModel = $model instanceof CustomField && $model->getKey();
+
+        if (! $model instanceof CustomField) {
+            $model = new CustomField();
+        }
+
+        $isExistingModel = $model->getKey();
         $modelType = $isExistingModel ? $model->type : null;
         $products = collect();
 
         if ($isExistingModel && $model->apply_to === 'specific' && ! empty($model->product_ids)) {
+            $productIds = collect($model->product_ids)->flatten()->filter()->all();
+
             $products = Product::query()
-                ->whereIn('id', $model->product_ids)
+                ->whereIn('id', $productIds)
                 ->get();
         }
 
